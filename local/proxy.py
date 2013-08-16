@@ -2248,8 +2248,7 @@ def pre_start():
             pass
     if os.name == 'nt':
         import ctypes
-        UnicodeType = type(b''.decode())
-        ctypes.windll.kernel32.SetConsoleTitleW(UnicodeType('GoAgent v%s' % __version__))
+        ctypes.windll.kernel32.SetConsoleTitleW(u'GoAgent v%s' % __version__)
         if not common.LISTEN_VISIBLE:
             ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0)
         else:
@@ -2265,8 +2264,8 @@ def pre_start():
             tasklist = os.popen('tasklist').read().lower()
             softwares = [x for x in softwares if x.lower()in tasklist]
             if softwares:
-                title = UnicodeType('GoAgent 建议')
-                error = UnicodeType('某些安全软件(如 %s)可能和本软件存在冲突，造成 CPU 占用过高。\n如有此现象建议暂时退出此安全软件来继续运行GoAgent' % ','.join(softwares))
+                title = u'GoAgent 建议'
+                error = u'某些安全软件(如 %s)可能和本软件存在冲突，造成 CPU 占用过高。\n如有此现象建议暂时退出此安全软件来继续运行GoAgent' % ','.join(softwares)
                 ctypes.windll.user32.MessageBoxW(None, error, title, 0)
                 #sys.exit(0)
     if common.GAE_APPIDS[0] == 'goagent':
