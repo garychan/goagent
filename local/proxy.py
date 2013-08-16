@@ -74,13 +74,11 @@ class Logging(type(sys)):
 
     def __init__(self, *args, **kwargs):
         self.level = self.__class__.INFO
-        self.__write = __write = sys.stderr.write
-        self.isatty = getattr(sys.stderr, 'isatty', lambda: False)()
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
         self.__set_debug_color = lambda: None
         self.__reset_color = lambda: None
-        if self.isatty:
+        if hasattr(sys.stderr, 'isatty') and sys.stderr.isatty():
             if os.name == 'nt':
                 import ctypes
                 SetConsoleTextAttribute = ctypes.windll.kernel32.SetConsoleTextAttribute
@@ -90,10 +88,10 @@ class Logging(type(sys)):
                 self.__set_debug_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x002)
                 self.__reset_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x07)
             elif os.name == 'posix':
-                self.__set_error_color = lambda: __write('\033[31m')
-                self.__set_warning_color = lambda: __write('\033[33m')
-                self.__set_debug_color = lambda: __write('\033[32m')
-                self.__reset_color = lambda: __write('\033[0m')
+                self.__set_error_color = lambda: sys.stderr.write('\033[31m')
+                self.__set_warning_color = lambda: sys.stderr.write('\033[33m')
+                self.__set_debug_color = lambda: sys.stderr.write('\033[32m')
+                self.__reset_color = lambda: sys.stderr.write('\033[0m')
 
     @classmethod
     def getLogger(cls, *args, **kwargs):
@@ -105,7 +103,7 @@ class Logging(type(sys)):
             self.debug = self.dummy
 
     def log(self, level, fmt, *args, **kwargs):
-        self.__write('%s - [%s] %s\n' % (level, time.ctime()[4:-5], fmt % args))
+        sys.stderr.write('%s - [%s] %s\n' % (level, time.ctime()[4:-5], fmt % args))
 
     def dummy(self, *args, **kwargs):
         pass
